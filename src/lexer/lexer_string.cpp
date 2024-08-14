@@ -8,7 +8,7 @@ LexerString::LexerString(const std::string &program)
 
 LexerString::~LexerString() {}
 
-char LexerString::get_next_char()
+inline char LexerString::get_next_char()
 {
     return program[position++];
 }

@@ -6,7 +6,6 @@ LexerFile::LexerFile(const std::string &filename) : LexerBase()
     if (!file.good())
         ERROR_CRASH("File not found: " + filename);
     this->file = std::move(file);
-    // call the parent constructor
 }
 
 LexerFile::~LexerFile()
@@ -14,7 +13,7 @@ LexerFile::~LexerFile()
     this->file.close();
 }
 
-char LexerFile::get_next_char()
+inline char LexerFile::get_next_char()
 {
     int c = this->file.get();
 
