@@ -1,49 +1,63 @@
-#include <string>
-#include "lexer.hpp"
-#include "token.hpp"
+#include "lexer_base.hpp"
 
-Token ZolnLexer::get_token()
+#include <string>
+
+LexerBase::LexerBase()
+{
+    this->current_char = ' ';
+    this->line_position = 0;
+}
+
+Token LexerBase::get_token()
 {
     this->skip_whitespace();
 
     // Identifier 
-    if (isalpha(this->current_char))
+    if (isalpha(this->current_char) || this->current_char == '_')
         return this->handle_identifier();
 
     // Number
     if (isdigit(this->current_char) || this->current_char == '.')
         return this->handle_number();
 
+    switch (this->current_char)
+    {
+    case '#':
+        while (this->current_char != '\n' && this->current_char != EOF)
+            this->current_char = get_next_char();
+        break;
+    }
+
     // EOF
     if (this->current_char == EOF)
         return T_EOF;
 
     // Error
-    this->error_string = "Unknown token : " + this->current_char;
     return T_ERROR;
 }
 
-void ZolnLexer::skip_whitespace()
+void LexerBase::skip_whitespace()
 {
     while (isspace(this->current_char))
-        this->current_char = getchar();
+        this->current_char = get_next_char();
 }
 
-Token ZolnLexer::handle_identifier()
+Token LexerBase::handle_identifier()
 {
     this->identifier_string = this->current_char;
-    this->current_char = getchar();
+    this->current_char = get_next_char();
 
-    while (isalnum(this->current_char))
+    while (isalnum(this->current_char) || this->current_char == '_')
     {
         this->identifier_string += this->current_char;
-        this->current_char = getchar();
+        this->current_char = get_next_char();
     }
 
+    DEBUG_PRINT(fprintf(stderr, "IDENTIFIER : %s\n", this->identifier_string.c_str()));
     return T_IDENTIFIER;
 }
 
-Token ZolnLexer::handle_number()
+Token LexerBase::handle_number()
 {
     std::string number_string;
     bool is_float = false;
@@ -54,7 +68,7 @@ Token ZolnLexer::handle_number()
             is_float = true;
 
         number_string += this->current_char;
-        this->current_char = getchar();
+        this->current_char = get_next_char();
     }
 
     if (is_float)
@@ -65,9 +79,4 @@ Token ZolnLexer::handle_number()
 
     this->number_value = std::stoi(number_string);
     return T_NUMBER;
-}
-
-char ZolnLexer::get_next_char()
-{
-    return ' ';
 }

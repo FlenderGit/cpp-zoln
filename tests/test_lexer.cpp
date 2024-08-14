@@ -1,12 +1,9 @@
-#include <stdio.h>
-#include "zoln.hpp"
-#include "lexer/lexer_file.hpp"
+#include "lexer_file.hpp"
 #include "token.hpp"
-#include <iostream>
 
 int main() {
 
-    LexerFile lexer("tests/program.zoln");
+    LexerFile lexer("tests/test_lexer.cpp");
     while (true)
     {
         Token token = lexer.get_token();
